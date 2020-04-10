@@ -18,3 +18,4 @@ LinkingTo: Rcpp, RcppArmadillo
 License: GPL (>= 2)
 Suggests:
     pcaPP
+RoxygenNote: 7.0.2
