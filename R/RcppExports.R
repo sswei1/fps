@@ -73,6 +73,7 @@ fps <- function(S, ndim, nsol = 50L, maxnvar = -1L, lambdamin = -1, lambda = as.
     .Call('_fps_fps', PACKAGE = 'fps', S, ndim, nsol, maxnvar, lambdamin, lambda, maxiter, tolerance, verbose)
 }
 
+#' @export
 fps_benchmark <- function(S, ndim, lambda, x0, Pi, rho = -1.0, maxiter = 100L, tolerance = 1e-3, verbose = 0L) {
     .Call('_fps_fps_benchmark', PACKAGE = 'fps', S, ndim, lambda, x0, Pi, rho, maxiter, tolerance, verbose)
 }

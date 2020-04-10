@@ -263,6 +263,7 @@ List fps(NumericMatrix S, double ndim, int nsol = 50,
 // 1. Only one lambda
 // 2. No safe elimination rule applied
 // 3. Timings and errors are recorded for each iteration
+//' @export
 // [[Rcpp::export]]
 List fps_benchmark(
     NumericMatrix S, double ndim, double lambda,
