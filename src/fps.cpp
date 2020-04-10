@@ -256,3 +256,65 @@ List fps(NumericMatrix S, double ndim, int nsol = 50,
 
   return out;
 }
+
+
+
+// Benchmarking the FPS algorithm
+// 1. Only one lambda
+// 2. No safe elimination rule applied
+// 3. Timings and errors are recorded for each iteration
+// [[Rcpp::export]]
+List fps_benchmark(
+    NumericMatrix S, double ndim, double lambda,
+    NumericMatrix x0, NumericMatrix Pi, double rho = -1.0,  // rho<0 means using built-in value
+    int maxiter = 100, double tolerance = 1e-3, int verbose = 0
+)
+{
+    // Sanity checks
+    if(S.nrow() < 2)
+        stop("Expected S to be a matrix");
+    if(ndim <= 0.0 || ndim >= S.nrow())
+        stop("Expected ndim to be between 0.0 and the number of rows/columns of S");
+    if(maxiter < 1)
+        stop("Expected maxiter > 0");
+    if(tolerance <= 0.0)
+        stop("Expected tolerance > 0");
+
+    // Wrap the input matrix with an arma::mat
+    const mat _S(S.begin(), S.nrow(), S.ncol(), false);
+    const mat _Pi(Pi.begin(), Pi.nrow(), Pi.ncol(), false);
+
+    // Metrics in each iteration
+    std::vector<double> errs;
+    std::vector<double> times;
+
+    // ADMM variables, initialized from x0
+    mat z(x0.begin(), x0.nrow(), x0.ncol(), true);
+    mat u = zeros<mat>(_S.n_rows, _S.n_cols);
+
+    // ADMM parameters
+    double tolerance_abs = std::sqrt(ndim) * tolerance,
+           admm_penalty = arma::norm(vectorise(_S), "inf"),
+           admm_adjust = 2.0;
+
+    if(rho > 0)
+      admm_penalty = rho;
+
+    int niter = admm_benchmark(
+      FantopeProjection(ndim), EntrywiseSoftThreshold(lambda), 
+      ndim, _S, _Pi, z, u, 
+      admm_penalty, admm_adjust,
+      maxiter, tolerance_abs,
+      errs, times, verbose
+    );
+
+    // Return
+    return List::create(
+      Named("ndim") = ndim,
+      Named("lambda") = lambda,
+      Named("projection") = z,
+      Named("niter") = niter,
+      Named("errors") = errs,
+      Named("times") = times
+    );
+}
