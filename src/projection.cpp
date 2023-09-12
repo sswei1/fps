@@ -31,7 +31,7 @@ void FantopeProjection::operator()(mat& x) const {
 void SingularValueProjection::operator()(mat& x) const {  
 
   int rank;
-  vec s;
+  vec s, eigval;
   mat u, v;
 
   svds(u, s, v, x, eigval.n_elem/2);
