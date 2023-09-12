@@ -34,7 +34,7 @@ void SingularValueProjection::operator()(mat& x) const {
   vec s;
   mat u, v;
 
-  svd(u, s, v, x);
+  svds(u, s, v, x, eigval.n_elem/2);
   rank = simplex(s, d, true);
 
   // Reconstruct
